@@ -1,0 +1,80 @@
+{
+	"name": "dataengg1",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "mlspark3",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "224g",
+			"driverCores": 32,
+			"executorMemory": "224g",
+			"executorCores": 32,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/c46a9435-c957-4e6c-a0f4-b9a597984773/resourceGroups/raspiot/providers/Microsoft.Synapse/workspaces/raspiotanalytics/bigDataPools/mlspark3",
+				"name": "mlspark3",
+				"type": "Spark",
+				"endpoint": "https://raspiotanalytics.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/mlspark3",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 10,
+				"cores": 32,
+				"memory": 224,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"diagram": {
+						"activateDiagramType": 1,
+						"chartConfig": {
+							"category": "bar",
+							"keys": [
+								"timeCreated"
+							],
+							"values": [
+								"EventProcessedUtcTime"
+							],
+							"yLabel": "EventProcessedUtcTime",
+							"xLabel": "timeCreated",
+							"aggregation": "SUM",
+							"aggByBackend": false
+						},
+						"aggData": "{\"EventProcessedUtcTime\":{\"2021-07-18T14:55:38.6779131Z\":0,\"2021-07-18T14:55:43.7049112Z\":0,\"2021-07-18T14:55:48.7328322Z\":0,\"2021-07-18T14:55:53.7632792Z\":0,\"2021-07-18T14:55:58.7926847Z\":0,\"2021-07-18T14:56:03.8152965Z\":0,\"2021-07-18T14:56:08.8371713Z\":0,\"2021-07-18T14:56:13.8729928Z\":0,\"2021-07-18T14:56:18.8942917Z\":0,\"2021-07-18T14:56:23.9156498Z\":0}}",
+						"isSummary": false,
+						"previewData": {
+							"filter": null
+						},
+						"isSql": false
+					}
+				},
+				"source": [
+					"%%pyspark\n",
+					"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/*/*/*.parquet', format='parquet')\n",
+					"display(df.limit(10))"
+				],
+				"execution_count": 1
+			}
+		]
+	}
+}
