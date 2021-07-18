@@ -73,7 +73,7 @@
 					"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/*/*/*.parquet', format='parquet')\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 1
+				"execution_count": 2
 			}
 		]
 	}
