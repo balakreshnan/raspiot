@@ -1,0 +1,587 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "raspiotanalytics"
+		},
+		"raspiotanalytics-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'raspiotanalytics-WorkspaceDefaultSqlServer'"
+		},
+		"raspiotanalytics-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raspiothnsstore.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/raspiotanalytics-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('raspiotanalytics-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/raspiotanalytics-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('raspiotanalytics-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/dataengg1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "mlspark3",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "224g",
+					"driverCores": 32,
+					"executorMemory": "224g",
+					"executorCores": 32,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/c46a9435-c957-4e6c-a0f4-b9a597984773/resourceGroups/raspiot/providers/Microsoft.Synapse/workspaces/raspiotanalytics/bigDataPools/mlspark3",
+						"name": "mlspark3",
+						"type": "Spark",
+						"endpoint": "https://raspiotanalytics.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/mlspark3",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "2.4",
+						"nodeCount": 10,
+						"cores": 32,
+						"memory": 224,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"timeCreated"
+									],
+									"values": [
+										"EventProcessedUtcTime"
+									],
+									"yLabel": "EventProcessedUtcTime",
+									"xLabel": "timeCreated",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"EventProcessedUtcTime\":{\"2021-07-18T22:06:55.143138Z\":0,\"2021-07-18T22:07:00.506141Z\":0,\"2021-07-18T22:07:05.6075645Z\":0,\"2021-07-18T22:07:10.7018932Z\":0,\"2021-07-18T22:07:15.7650849Z\":0,\"2021-07-18T22:07:20.8200639Z\":0,\"2021-07-18T22:07:25.9042358Z\":0,\"2021-07-18T22:07:30.9530649Z\":0,\"2021-07-18T22:07:35.997733Z\":0,\"2021-07-18T22:07:41.0437609Z\":0}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"%%pyspark\n",
+							"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/*/*/*.parquet', format='parquet')\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"pressure"
+									],
+									"values": [
+										"MachTemp"
+									],
+									"yLabel": "MachTemp",
+									"xLabel": "pressure",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"MachTemp\":{\"0.993115051482734\":20.939565451904,\"1.0518091342393836\":21.454769067212368,\"1.155768950882732\":22.367305235526203,\"1.283501779931118\":23.488515623839813,\"1.334463148708942\":23.935843194222937,\"1.3973331292347848\":24.487701912172,\"1.5082625248139485\":25.461415495589105,\"1.5293827279536951\":25.646803945371325,\"1.5664578792388575\":25.97224138442997,\"1.5714366282801693\":26.01594373712593,\"1.6680267350970646\":26.863790230296456,\"1.6884272176856987\":27.04286113301891,\"1.7875215208739337\":27.912688905448974,\"1.806767235890152\":28.08162351503578,\"1.8174204453182052\":28.175135020015357,\"1.8222501475827138\":28.217529073226043,\"1.9390257145274206\":29.24255904974069,\"2.0510494891833093\":30.22587884949794,\"2.1582494787474062\":31.166856535671677,\"2.222470169893284\":31.73057149128549,\"2.3424618557390513\":32.78383184482056,\"2.399065579880254\":33.28068675672667,\"2.4379915718180856\":33.62237046373653,\"2.563916640159011\":34.72771273028465,\"2.6839634235965013\":35.78145671823596,\"2.7014485756991276\":35.93493749780345,\"2.7967853982578967\":36.77178294026376,\"2.8725786410781033\":37.43707918279669,\"2.9380916539494706\":38.012137851334245,\"2.981935383532851\":38.396988366566134,\"2.9896062719174665\":38.46432172016443,\"3.000026886569514\":38.55579155988796,\"3.002961834939693\":38.58155388447064,\"3.132058494541209\":39.71473567430617,\"3.2420325586211005\":40.68006357011855,\"3.3578350870308267\":41.69655243060392,\"3.399198875136455\":42.05963457064222,\"3.448093626190776\":42.488821829896814,\"3.566235271683215\":43.52584294033044,\"3.6115105489104415\":43.92325926265832,\"3.7420121908144783\":45.06877367492709,\"3.7901109363702115\":45.49097377480519,\"3.8475768953526925\":45.9953971925403}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"display(df)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"print(df.schema)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df.columns"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df.printSchema()"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from pyspark.sql.functions import *"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = df.withColumn(\"year\", year(df.timeCreated))\n",
+							"df = df.withColumn(\"month\", month(df.timeCreated))\n",
+							"df = df.withColumn(\"day\", dayofmonth(df.timeCreated))\n",
+							"df = df.withColumn(\"hour\", hour(df.timeCreated))\n",
+							"df = df.withColumn(\"minute\", minute(df.timeCreated))"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"pressure"
+									],
+									"values": [
+										"MachTemp"
+									],
+									"yLabel": "MachTemp",
+									"xLabel": "pressure",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"MachTemp\":{\"0.993115051482734\":20.939565451904,\"1.0518091342393836\":21.454769067212368,\"1.155768950882732\":22.367305235526203,\"1.283501779931118\":23.488515623839813,\"1.334463148708942\":23.935843194222937,\"1.3973331292347848\":24.487701912172,\"1.5082625248139485\":25.461415495589105,\"1.5293827279536951\":25.646803945371325,\"1.5664578792388575\":25.97224138442997,\"1.5714366282801693\":26.01594373712593,\"1.6680267350970646\":26.863790230296456,\"1.6884272176856987\":27.04286113301891,\"1.7875215208739337\":27.912688905448974,\"1.806767235890152\":28.08162351503578,\"1.8174204453182052\":28.175135020015357,\"1.8222501475827138\":28.217529073226043,\"1.9390257145274206\":29.24255904974069,\"2.0510494891833093\":30.22587884949794,\"2.1582494787474062\":31.166856535671677,\"2.222470169893284\":31.73057149128549,\"2.3424618557390513\":32.78383184482056,\"2.399065579880254\":33.28068675672667,\"2.4379915718180856\":33.62237046373653,\"2.563916640159011\":34.72771273028465,\"2.6839634235965013\":35.78145671823596,\"2.7014485756991276\":35.93493749780345,\"2.7967853982578967\":36.77178294026376,\"2.8725786410781033\":37.43707918279669,\"2.9380916539494706\":38.012137851334245,\"2.981935383532851\":38.396988366566134,\"2.9896062719174665\":38.46432172016443,\"3.000026886569514\":38.55579155988796,\"3.002961834939693\":38.58155388447064,\"3.132058494541209\":39.71473567430617,\"3.2420325586211005\":40.68006357011855,\"3.3578350870308267\":41.69655243060392,\"3.399198875136455\":42.05963457064222,\"3.448093626190776\":42.488821829896814,\"3.566235271683215\":43.52584294033044,\"3.6115105489104415\":43.92325926265832,\"3.7420121908144783\":45.06877367492709,\"3.7901109363702115\":45.49097377480519,\"3.8475768953526925\":45.9953971925403}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"display(df)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df.printSchema"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 12
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"traindf = df[[\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]]"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 30
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"pressure"
+									],
+									"values": [
+										"MachTemp"
+									],
+									"yLabel": "MachTemp",
+									"xLabel": "pressure",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"MachTemp\":{\"0.993115051482734\":20.939565451904,\"1.0518091342393836\":21.454769067212368,\"1.155768950882732\":22.367305235526203,\"1.283501779931118\":23.488515623839813,\"1.334463148708942\":23.935843194222937,\"1.3973331292347848\":24.487701912172,\"1.5082625248139485\":25.461415495589105,\"1.5293827279536951\":25.646803945371325,\"1.5664578792388575\":25.97224138442997,\"1.5714366282801693\":26.01594373712593,\"1.6680267350970646\":26.863790230296456,\"1.6884272176856987\":27.04286113301891,\"1.7875215208739337\":27.912688905448974,\"1.806767235890152\":28.08162351503578,\"1.8174204453182052\":28.175135020015357,\"1.8222501475827138\":28.217529073226043,\"1.9390257145274206\":29.24255904974069,\"2.0510494891833093\":30.22587884949794,\"2.1582494787474062\":31.166856535671677,\"2.222470169893284\":31.73057149128549,\"2.3424618557390513\":32.78383184482056,\"2.399065579880254\":33.28068675672667,\"2.4379915718180856\":33.62237046373653,\"2.563916640159011\":34.72771273028465,\"2.6839634235965013\":35.78145671823596,\"2.7014485756991276\":35.93493749780345,\"2.7967853982578967\":36.77178294026376,\"2.8725786410781033\":37.43707918279669,\"2.9380916539494706\":38.012137851334245,\"2.981935383532851\":38.396988366566134,\"2.9896062719174665\":38.46432172016443,\"3.000026886569514\":38.55579155988796,\"3.002961834939693\":38.58155388447064,\"3.132058494541209\":39.71473567430617,\"3.2420325586211005\":40.68006357011855,\"3.3578350870308267\":41.69655243060392,\"3.399198875136455\":42.05963457064222,\"3.448093626190776\":42.488821829896814,\"3.566235271683215\":43.52584294033044,\"3.6115105489104415\":43.92325926265832,\"3.7420121908144783\":45.06877367492709,\"3.7901109363702115\":45.49097377480519,\"3.8475768953526925\":45.9953971925403}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"display(traindf)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 31
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"categoricalColumns = [item[0] for item in traindf.dtypes if item[1].startswith('string') ]"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 32
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"featurescol = [\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 33
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"stages = []\n",
+							"#iterate through all categorical values\n",
+							"for categoricalCol in categoricalColumns:\n",
+							"    #create a string indexer for those categorical values and assign a new name including the word 'Index'\n",
+							"    stringIndexer = StringIndexer(inputCol = categoricalCol, outputCol = categoricalCol + 'Index')\n",
+							"\n",
+							"    #append the string Indexer to our list of stages\n",
+							"    stages += [stringIndexer]"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 34
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from pyspark.ml import Pipeline\n",
+							"from pyspark.ml.classification import RandomForestClassifier\n",
+							"from pyspark.ml.feature import IndexToString, StringIndexer, VectorIndexer\n",
+							"from pyspark.ml.evaluation import MulticlassClassificationEvaluator\n",
+							"from pyspark.sql import functions as f\n",
+							"from pyspark.ml.feature import VectorAssembler"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 35
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"labelIndexer = StringIndexer(inputCol=\"MachTemp\", outputCol=\"indexedLabel\").fit(traindf)\n",
+							"\n",
+							"#assembler = VectorAssembler(inputCols=featurescol, outputCol=\"features\")\n",
+							"assembler = VectorAssembler(inputCols=featurescol, outputCol=\"features\")\n",
+							"\n",
+							"#featureIndexer = VectorIndexer(inputCol=\"features\", outputCol=\"indexedFeatures\", maxCategories=4).fit(titanicds1)\n",
+							"\n",
+							"\n",
+							"(trainingData, testData) = traindf.randomSplit([0.7, 0.3])"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 36
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"pressure"
+									],
+									"values": [
+										"MachTemp"
+									],
+									"yLabel": "MachTemp",
+									"xLabel": "pressure",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"MachTemp\":{\"1.155768950882732\":22.367305235526203,\"1.334463148708942\":23.935843194222937,\"1.5082625248139485\":25.461415495589105,\"1.5293827279536951\":25.646803945371325,\"1.6680267350970646\":26.863790230296456,\"1.6884272176856987\":27.04286113301891,\"1.8174204453182052\":28.175135020015357,\"1.8222501475827138\":28.217529073226043,\"1.9390257145274206\":29.24255904974069,\"2.0510494891833093\":30.22587884949794,\"2.1582494787474062\":31.166856535671677,\"2.3424618557390513\":32.78383184482056,\"2.399065579880254\":33.28068675672667,\"2.4379915718180856\":33.62237046373653,\"2.563916640159011\":34.72771273028465,\"2.7014485756991276\":35.93493749780345,\"2.7967853982578967\":36.77178294026376,\"2.981935383532851\":38.396988366566134,\"2.9896062719174665\":38.46432172016443,\"3.000026886569514\":38.55579155988796,\"3.002961834939693\":38.58155388447064,\"3.3578350870308267\":41.69655243060392,\"3.399198875136455\":42.05963457064222,\"3.448093626190776\":42.488821829896814,\"3.566235271683215\":43.52584294033044,\"3.8475768953526925\":45.9953971925403}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"display(trainingData)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 37
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"assembler = VectorAssembler(\n",
+							"    inputCols=[\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"],\n",
+							"    outputCol=\"features\")\n",
+							"\n",
+							"output = assembler.transform(traindf)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 44
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"pressure"
+									],
+									"values": [
+										"MachTemp"
+									],
+									"yLabel": "MachTemp",
+									"xLabel": "pressure",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"MachTemp\":{\"0.993115051482734\":20.939565451904,\"1.0518091342393836\":21.454769067212368,\"1.155768950882732\":22.367305235526203,\"1.283501779931118\":23.488515623839813,\"1.334463148708942\":23.935843194222937,\"1.3973331292347848\":24.487701912172,\"1.5082625248139485\":25.461415495589105,\"1.5293827279536951\":25.646803945371325,\"1.5664578792388575\":25.97224138442997,\"1.5714366282801693\":26.01594373712593,\"1.6680267350970646\":26.863790230296456,\"1.6884272176856987\":27.04286113301891,\"1.7875215208739337\":27.912688905448974,\"1.806767235890152\":28.08162351503578,\"1.8174204453182052\":28.175135020015357,\"1.8222501475827138\":28.217529073226043,\"1.9390257145274206\":29.24255904974069,\"2.0510494891833093\":30.22587884949794,\"2.1582494787474062\":31.166856535671677,\"2.222470169893284\":31.73057149128549,\"2.3424618557390513\":32.78383184482056,\"2.399065579880254\":33.28068675672667,\"2.4379915718180856\":33.62237046373653,\"2.563916640159011\":34.72771273028465,\"2.6839634235965013\":35.78145671823596,\"2.7014485756991276\":35.93493749780345,\"2.7967853982578967\":36.77178294026376,\"2.8725786410781033\":37.43707918279669,\"2.9380916539494706\":38.012137851334245,\"2.981935383532851\":38.396988366566134,\"2.9896062719174665\":38.46432172016443,\"3.000026886569514\":38.55579155988796,\"3.002961834939693\":38.58155388447064,\"3.132058494541209\":39.71473567430617,\"3.2420325586211005\":40.68006357011855,\"3.3578350870308267\":41.69655243060392,\"3.399198875136455\":42.05963457064222,\"3.448093626190776\":42.488821829896814,\"3.566235271683215\":43.52584294033044,\"3.6115105489104415\":43.92325926265832,\"3.7420121908144783\":45.06877367492709,\"3.7901109363702115\":45.49097377480519,\"3.8475768953526925\":45.9953971925403}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"display(output)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 45
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"output = output.withColumn(\"labels\", output.MachTemp)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"diagram": {
+								"activateDiagramType": 1,
+								"chartConfig": {
+									"category": "bar",
+									"keys": [
+										"pressure"
+									],
+									"values": [
+										"MachTemp"
+									],
+									"yLabel": "MachTemp",
+									"xLabel": "pressure",
+									"aggregation": "SUM",
+									"aggByBackend": false
+								},
+								"aggData": "{\"MachTemp\":{\"0.993115051482734\":20.939565451904,\"1.0518091342393836\":21.454769067212368,\"1.155768950882732\":22.367305235526203,\"1.283501779931118\":23.488515623839813,\"1.334463148708942\":23.935843194222937,\"1.3973331292347848\":24.487701912172,\"1.5082625248139485\":25.461415495589105,\"1.5293827279536951\":25.646803945371325,\"1.5664578792388575\":25.97224138442997,\"1.5714366282801693\":26.01594373712593,\"1.6680267350970646\":26.863790230296456,\"1.6884272176856987\":27.04286113301891,\"1.7875215208739337\":27.912688905448974,\"1.806767235890152\":28.08162351503578,\"1.8174204453182052\":28.175135020015357,\"1.8222501475827138\":28.217529073226043,\"1.9390257145274206\":29.24255904974069,\"2.0510494891833093\":30.22587884949794,\"2.1582494787474062\":31.166856535671677,\"2.222470169893284\":31.73057149128549,\"2.3424618557390513\":32.78383184482056,\"2.399065579880254\":33.28068675672667,\"2.4379915718180856\":33.62237046373653,\"2.563916640159011\":34.72771273028465,\"2.6839634235965013\":35.78145671823596,\"2.7014485756991276\":35.93493749780345,\"2.7967853982578967\":36.77178294026376,\"2.8725786410781033\":37.43707918279669,\"2.9380916539494706\":38.012137851334245,\"2.981935383532851\":38.396988366566134,\"2.9896062719174665\":38.46432172016443,\"3.000026886569514\":38.55579155988796,\"3.002961834939693\":38.58155388447064,\"3.132058494541209\":39.71473567430617,\"3.2420325586211005\":40.68006357011855,\"3.3578350870308267\":41.69655243060392,\"3.399198875136455\":42.05963457064222,\"3.448093626190776\":42.488821829896814,\"3.566235271683215\":43.52584294033044,\"3.6115105489104415\":43.92325926265832,\"3.7420121908144783\":45.06877367492709,\"3.7901109363702115\":45.49097377480519,\"3.8475768953526925\":45.9953971925403}}",
+								"isSummary": false,
+								"previewData": {
+									"filter": null
+								},
+								"isSql": false
+							}
+						},
+						"source": [
+							"display(output)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 48
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from pyspark.ml.regression import LinearRegression\n",
+							"\n",
+							"lr = LinearRegression(maxIter=10, regParam=0.3, elasticNetParam=0.8).setLabelCol(\"MachTemp\")\n",
+							"\n",
+							"# Fit the model\n",
+							"lrModel = lr.fit(output)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 50
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"# Print the coefficients and intercept for linear regression\n",
+							"print(\"Coefficients: %s\" % str(lrModel.coefficients))\n",
+							"print(\"Intercept: %s\" % str(lrModel.intercept))\n",
+							"\n",
+							"# Summarize the model over the training set and print out some metrics\n",
+							"trainingSummary = lrModel.summary\n",
+							"print(\"numIterations: %d\" % trainingSummary.totalIterations)\n",
+							"print(\"objectiveHistory: %s\" % str(trainingSummary.objectiveHistory))\n",
+							"trainingSummary.residuals.show()\n",
+							"print(\"RMSE: %f\" % trainingSummary.rootMeanSquaredError)\n",
+							"print(\"r2: %f\" % trainingSummary.r2)"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": 51
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		}
+	]
+}
