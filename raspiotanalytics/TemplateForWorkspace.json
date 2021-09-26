@@ -107,6 +107,11 @@
 				},
 				"metadata": {
 					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
 					"language_info": {
 						"name": "python"
 					},
@@ -122,8 +127,7 @@
 						"sparkVersion": "2.4",
 						"nodeCount": 10,
 						"cores": 32,
-						"memory": 224,
-						"automaticScaleJobs": false
+						"memory": 224
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -131,6 +135,9 @@
 					{
 						"cell_type": "code",
 						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
 							"diagram": {
 								"activateDiagramType": 1,
 								"chartConfig": {
@@ -152,11 +159,12 @@
 									"filter": null
 								},
 								"isSql": false
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"%%pyspark\n",
-							"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/*/*/*.parquet', format='parquet')\n",
+							"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/*/*/*/*.parquet', format='parquet')\n",
 							"display(df.limit(10))"
 						],
 						"outputs": [],
@@ -186,12 +194,12 @@
 									"filter": null
 								},
 								"isSql": false
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"display(df)"
 						],
-						"attachments": {},
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -201,7 +209,6 @@
 						"source": [
 							"print(df.schema)"
 						],
-						"attachments": {},
 						"outputs": [],
 						"execution_count": 4
 					},
@@ -211,7 +218,6 @@
 						"source": [
 							"df.columns"
 						],
-						"attachments": {},
 						"outputs": [],
 						"execution_count": 5
 					},
@@ -221,7 +227,6 @@
 						"source": [
 							"df.printSchema()"
 						],
-						"attachments": {},
 						"outputs": [],
 						"execution_count": 6
 					},
@@ -231,9 +236,8 @@
 						"source": [
 							"from pyspark.sql.functions import *"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 7
+						"execution_count": 3
 					},
 					{
 						"cell_type": "code",
@@ -245,9 +249,8 @@
 							"df = df.withColumn(\"hour\", hour(df.timeCreated))\n",
 							"df = df.withColumn(\"minute\", minute(df.timeCreated))"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 4
 					},
 					{
 						"cell_type": "code",
@@ -273,14 +276,14 @@
 									"filter": null
 								},
 								"isSql": false
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"display(df)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 5
 					},
 					{
 						"cell_type": "code",
@@ -288,7 +291,6 @@
 						"source": [
 							"df.printSchema"
 						],
-						"attachments": {},
 						"outputs": [],
 						"execution_count": 12
 					},
@@ -298,9 +300,8 @@
 						"source": [
 							"traindf = df[[\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]]"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 30
+						"execution_count": 6
 					},
 					{
 						"cell_type": "code",
@@ -326,14 +327,14 @@
 									"filter": null
 								},
 								"isSql": false
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"display(traindf)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 7
 					},
 					{
 						"cell_type": "code",
@@ -341,9 +342,8 @@
 						"source": [
 							"categoricalColumns = [item[0] for item in traindf.dtypes if item[1].startswith('string') ]"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 32
+						"execution_count": 9
 					},
 					{
 						"cell_type": "code",
@@ -351,9 +351,8 @@
 						"source": [
 							"featurescol = [\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 33
+						"execution_count": 10
 					},
 					{
 						"cell_type": "code",
@@ -368,9 +367,8 @@
 							"    #append the string Indexer to our list of stages\n",
 							"    stages += [stringIndexer]"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 34
+						"execution_count": 11
 					},
 					{
 						"cell_type": "code",
@@ -383,9 +381,8 @@
 							"from pyspark.sql import functions as f\n",
 							"from pyspark.ml.feature import VectorAssembler"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 35
+						"execution_count": 12
 					},
 					{
 						"cell_type": "code",
@@ -401,9 +398,8 @@
 							"\n",
 							"(trainingData, testData) = traindf.randomSplit([0.7, 0.3])"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 36
+						"execution_count": 13
 					},
 					{
 						"cell_type": "code",
@@ -429,14 +425,14 @@
 									"filter": null
 								},
 								"isSql": false
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"display(trainingData)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 37
+						"execution_count": 14
 					},
 					{
 						"cell_type": "code",
@@ -448,9 +444,8 @@
 							"\n",
 							"output = assembler.transform(traindf)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 44
+						"execution_count": 15
 					},
 					{
 						"cell_type": "code",
@@ -476,14 +471,14 @@
 									"filter": null
 								},
 								"isSql": false
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"display(output)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 45
+						"execution_count": 16
 					},
 					{
 						"cell_type": "code",
@@ -491,7 +486,6 @@
 						"source": [
 							"output = output.withColumn(\"labels\", output.MachTemp)"
 						],
-						"attachments": {},
 						"outputs": [],
 						"execution_count": 46
 					},
@@ -524,7 +518,6 @@
 						"source": [
 							"display(output)"
 						],
-						"attachments": {},
 						"outputs": [],
 						"execution_count": 48
 					},
@@ -539,9 +532,8 @@
 							"# Fit the model\n",
 							"lrModel = lr.fit(output)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 50
+						"execution_count": 17
 					},
 					{
 						"cell_type": "code",
@@ -559,23 +551,72 @@
 							"print(\"RMSE: %f\" % trainingSummary.rootMeanSquaredError)\n",
 							"print(\"r2: %f\" % trainingSummary.r2)"
 						],
-						"attachments": {},
 						"outputs": [],
-						"execution_count": 51
+						"execution_count": 18
 					},
 					{
 						"cell_type": "code",
 						"metadata": {},
-						"source": [],
-						"attachments": {},
+						"source": [
+							"output = output.withColumn(\"label\", output.MachTemp)"
+						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 19
 					},
 					{
 						"cell_type": "code",
 						"metadata": {},
-						"source": [],
-						"attachments": {},
+						"source": [
+							"from pyspark.ml import Pipeline\n",
+							"from pyspark.ml.regression import DecisionTreeRegressor\n",
+							"from pyspark.ml.feature import VectorIndexer\n",
+							"from pyspark.ml.evaluation import RegressionEvaluator\n",
+							"\n",
+							"# Load the data stored in LIBSVM format as a DataFrame.\n",
+							"#data = spark.read.format(\"libsvm\").load(\"data/mllib/sample_libsvm_data.txt\")\n",
+							"\n",
+							"# Automatically identify categorical features, and index them.\n",
+							"# We specify maxCategories so features with > 4 distinct values are treated as continuous.\n",
+							"featureIndexer =\\\n",
+							"    VectorIndexer(inputCol=\"features\", outputCol=\"indexedFeatures\", maxCategories=4).fit(output)\n",
+							"\n",
+							"# Split the data into training and test sets (30% held out for testing)\n",
+							"(trainingData, testData) = output.randomSplit([0.7, 0.3])\n",
+							"\n",
+							"# Train a DecisionTree model.\n",
+							"dt = DecisionTreeRegressor(featuresCol=\"indexedFeatures\")\n",
+							"\n",
+							"# Chain indexer and tree in a Pipeline\n",
+							"pipeline = Pipeline(stages=[featureIndexer, dt])\n",
+							"\n",
+							"# Train model.  This also runs the indexer.\n",
+							"model = pipeline.fit(trainingData)\n",
+							"\n",
+							"# Make predictions.\n",
+							"predictions = model.transform(testData)\n",
+							"\n",
+							"# Select example rows to display.\n",
+							"predictions.select(\"prediction\", \"label\", \"features\").show(5)\n",
+							"\n",
+							"# Select (prediction, true label) and compute test error\n",
+							"evaluator = RegressionEvaluator(\n",
+							"    labelCol=\"label\", predictionCol=\"prediction\", metricName=\"rmse\")\n",
+							"rmse = evaluator.evaluate(predictions)\n",
+							"print(\"Root Mean Squared Error (RMSE) on test data = %g\" % rmse)\n",
+							"\n",
+							"treeModel = model.stages[1]\n",
+							"# summary only\n",
+							"print(treeModel)"
+						],
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							""
+						],
 						"outputs": [],
 						"execution_count": null
 					}
