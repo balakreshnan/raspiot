@@ -21,6 +21,11 @@
 		},
 		"metadata": {
 			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
 			"language_info": {
 				"name": "python"
 			},
@@ -36,8 +41,7 @@
 				"sparkVersion": "2.4",
 				"nodeCount": 10,
 				"cores": 32,
-				"memory": 224,
-				"automaticScaleJobs": false
+				"memory": 224
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -45,6 +49,9 @@
 			{
 				"cell_type": "code",
 				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
 					"diagram": {
 						"activateDiagramType": 1,
 						"chartConfig": {
@@ -70,7 +77,7 @@
 				},
 				"source": [
 					"%%pyspark\n",
-					"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/*/*/*.parquet', format='parquet')\n",
+					"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/*/*/*/*.parquet', format='parquet')\n",
 					"display(df.limit(10))"
 				],
 				"execution_count": 1
@@ -471,7 +478,9 @@
 			},
 			{
 				"cell_type": "code",
-				"source": [],
+				"source": [
+					""
+				],
 				"execution_count": null
 			}
 		]
