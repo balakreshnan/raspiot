@@ -24,7 +24,7 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
@@ -73,7 +73,8 @@
 							"filter": null
 						},
 						"isSql": false
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%pyspark\n",
@@ -106,7 +107,8 @@
 							"filter": null
 						},
 						"isSql": false
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"display(df)"
@@ -139,7 +141,7 @@
 				"source": [
 					"from pyspark.sql.functions import *"
 				],
-				"execution_count": 7
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -150,7 +152,7 @@
 					"df = df.withColumn(\"hour\", hour(df.timeCreated))\n",
 					"df = df.withColumn(\"minute\", minute(df.timeCreated))"
 				],
-				"execution_count": 10
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -176,12 +178,13 @@
 							"filter": null
 						},
 						"isSql": false
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"display(df)"
 				],
-				"execution_count": 11
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -195,7 +198,7 @@
 				"source": [
 					"traindf = df[[\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]]"
 				],
-				"execution_count": 30
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -221,26 +224,27 @@
 							"filter": null
 						},
 						"isSql": false
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"display(traindf)"
 				],
-				"execution_count": 31
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"categoricalColumns = [item[0] for item in traindf.dtypes if item[1].startswith('string') ]"
 				],
-				"execution_count": 32
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"featurescol = [\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]"
 				],
-				"execution_count": 33
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -254,7 +258,7 @@
 					"    #append the string Indexer to our list of stages\n",
 					"    stages += [stringIndexer]"
 				],
-				"execution_count": 34
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -266,7 +270,7 @@
 					"from pyspark.sql import functions as f\n",
 					"from pyspark.ml.feature import VectorAssembler"
 				],
-				"execution_count": 35
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -281,7 +285,7 @@
 					"\n",
 					"(trainingData, testData) = traindf.randomSplit([0.7, 0.3])"
 				],
-				"execution_count": 36
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -307,12 +311,13 @@
 							"filter": null
 						},
 						"isSql": false
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"display(trainingData)"
 				],
-				"execution_count": 37
+				"execution_count": 14
 			},
 			{
 				"cell_type": "code",
@@ -323,7 +328,7 @@
 					"\n",
 					"output = assembler.transform(traindf)"
 				],
-				"execution_count": 44
+				"execution_count": 15
 			},
 			{
 				"cell_type": "code",
@@ -349,12 +354,13 @@
 							"filter": null
 						},
 						"isSql": false
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"display(output)"
 				],
-				"execution_count": 45
+				"execution_count": 16
 			},
 			{
 				"cell_type": "code",
@@ -404,7 +410,7 @@
 					"# Fit the model\n",
 					"lrModel = lr.fit(output)"
 				],
-				"execution_count": 50
+				"execution_count": 17
 			},
 			{
 				"cell_type": "code",
@@ -421,14 +427,14 @@
 					"print(\"RMSE: %f\" % trainingSummary.rootMeanSquaredError)\n",
 					"print(\"r2: %f\" % trainingSummary.r2)"
 				],
-				"execution_count": 51
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
 				"source": [
 					"output = output.withColumn(\"label\", output.MachTemp)"
 				],
-				"execution_count": 53
+				"execution_count": 19
 			},
 			{
 				"cell_type": "code",
@@ -474,7 +480,7 @@
 					"# summary only\n",
 					"print(treeModel)"
 				],
-				"execution_count": 54
+				"execution_count": 20
 			},
 			{
 				"cell_type": "code",
