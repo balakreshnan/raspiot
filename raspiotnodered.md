@@ -102,3 +102,7 @@ FROM
 ```
 
 ![alt text](https://github.com/balakreshnan/raspiot/blob/main/images/nodered7.jpg "Logo Title Text 1")
+
+- Also check the NodeRed UI dashboard by http://ip:1880/ui
+
+![alt text](https://github.com/balakreshnan/raspiot/blob/main/images/nodered9.jpg "Logo Title Text 1")
