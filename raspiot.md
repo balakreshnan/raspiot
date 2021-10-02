@@ -36,6 +36,24 @@
 
 - Create a query
 
+```
+SELECT
+    machine.temperature AS MachTemp,
+    machine.pressure as pressure,
+    ambient.temperature as AmbTemp,
+    ambient.humidity as humidity,
+    timeCreated,
+    EventProcessedUtcTime,
+    PartitionId,
+    EventEnqueuedUtcTime,
+    IoTHub.ConnectionDeviceId as DeviceId,
+    IoTHub.EnqueuedTime as DeviceEnqueuedTime
+INTO
+    output
+FROM
+    in
+```
+
 ![alt text](https://github.com/balakreshnan/raspiot/blob/main/images/raspiot1.jpg "Logo Title Text 1")
 
 - Input data 
