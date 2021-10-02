@@ -53,6 +53,8 @@
 sudo iotedge list
 ```
 
+![alt text](https://github.com/balakreshnan/raspiot/blob/main/images/nodered8.jpg "Logo Title Text 1")
+
 - Now you should see nodered module
 - Now in the above Repo there is a example folder
 - https://github.com/iotblackbelt/noderededgemodule/tree/master/node-red-contrib-azure-iot-edge-module/examples
