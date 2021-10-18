@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8ce9bfe5-fb47-4321-876d-909328434185"
+				"spark.autotune.trackingId": "28613e9e-613d-4ed3-a0ef-3a820b4ff553"
 			}
 		},
 		"metadata": {
@@ -203,8 +203,45 @@
 						"transient": {
 							"deleting": false
 						}
+					}
+				},
+				"source": [
+					"df = df.withColumn(\"year\", year(col(\"TimeCreated\"))).withColumn(\"month\", month(col(\"TimeCreated\"))).withColumn(\"day\", dayofmonth(col(\"TimeCreated\")))\r\n",
+					"df = df.withColumn(\"hour\", hour(col(\"TimeCreated\"))).withColumn(\"minute\", minute(col(\"TimeCreated\"))).withColumn(\"second\", second(col(\"TimeCreated\")))"
+				],
+				"execution_count": 56
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
 					},
 					"collapsed": false
+				},
+				"source": [
+					"display(df.limit(5))"
+				],
+				"execution_count": 57
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
 				},
 				"source": [
 					""
