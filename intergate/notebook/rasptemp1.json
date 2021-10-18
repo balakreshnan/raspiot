@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "30e8073a-f8c4-489d-8db1-a97f6aa5214c"
+				"spark.autotune.trackingId": "6eec7631-13d2-49f2-a558-36202312f524"
 			}
 		},
 		"metadata": {
@@ -61,7 +61,7 @@
 					"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/10/18/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 3
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -80,7 +80,25 @@
 				"source": [
 					"display(df)"
 				],
-				"execution_count": 4
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df.count()"
+				],
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
