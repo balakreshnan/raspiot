@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6d0ab96f-54c1-4571-bc32-faead3ee1e18"
+				"spark.autotune.trackingId": "77fdd68d-a2ce-4ff1-b834-31b046dfc957"
 			}
 		},
 		"metadata": {
@@ -247,7 +247,7 @@
 				"source": [
 					"display(df.groupby(['year','month','day','hour','minute']).agg({'temperature': 'avg', 'humidity': 'avg'}))"
 				],
-				"execution_count": 64
+				"execution_count": 65
 			},
 			{
 				"cell_type": "code",
