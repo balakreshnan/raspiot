@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "77fdd68d-a2ce-4ff1-b834-31b046dfc957"
+				"spark.autotune.trackingId": "8c5dc6da-4ab6-452c-b8b8-da4cca0ad565"
 			}
 		},
 		"metadata": {
@@ -61,7 +61,7 @@
 					"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/10/18/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 34
+				"execution_count": 67
 			},
 			{
 				"cell_type": "code",
@@ -80,7 +80,7 @@
 				"source": [
 					"display(df)"
 				],
-				"execution_count": 35
+				"execution_count": 68
 			},
 			{
 				"cell_type": "code",
@@ -98,7 +98,7 @@
 				"source": [
 					"df.count()"
 				],
-				"execution_count": 36
+				"execution_count": 69
 			},
 			{
 				"cell_type": "code",
@@ -116,7 +116,7 @@
 				"source": [
 					"df.describe()"
 				],
-				"execution_count": 37
+				"execution_count": 70
 			},
 			{
 				"cell_type": "code",
@@ -134,7 +134,7 @@
 				"source": [
 					"from pyspark.sql.functions import *"
 				],
-				"execution_count": 38
+				"execution_count": 71
 			},
 			{
 				"cell_type": "code",
@@ -152,7 +152,7 @@
 				"source": [
 					"df = df.withColumn('TimeCreated', to_timestamp(col(\"sensortime\"),\"MM/dd/yyyy HH:mm:ss.SSSSSS\"))"
 				],
-				"execution_count": 50
+				"execution_count": 72
 			},
 			{
 				"cell_type": "code",
@@ -171,7 +171,7 @@
 				"source": [
 					"display(df.limit(5))"
 				],
-				"execution_count": 51
+				"execution_count": 73
 			},
 			{
 				"cell_type": "code",
@@ -190,7 +190,7 @@
 				"source": [
 					"display(df.printSchema())"
 				],
-				"execution_count": 54
+				"execution_count": 74
 			},
 			{
 				"cell_type": "code",
@@ -209,7 +209,7 @@
 					"df = df.withColumn(\"year\", year(col(\"TimeCreated\"))).withColumn(\"month\", month(col(\"TimeCreated\"))).withColumn(\"day\", dayofmonth(col(\"TimeCreated\")))\r\n",
 					"df = df.withColumn(\"hour\", hour(col(\"TimeCreated\"))).withColumn(\"minute\", minute(col(\"TimeCreated\"))).withColumn(\"second\", second(col(\"TimeCreated\")))"
 				],
-				"execution_count": 56
+				"execution_count": 75
 			},
 			{
 				"cell_type": "code",
@@ -228,7 +228,7 @@
 				"source": [
 					"display(df.limit(5))"
 				],
-				"execution_count": 57
+				"execution_count": 76
 			},
 			{
 				"cell_type": "code",
@@ -247,7 +247,7 @@
 				"source": [
 					"display(df.groupby(['year','month','day','hour','minute']).agg({'temperature': 'avg', 'humidity': 'avg'}))"
 				],
-				"execution_count": 65
+				"execution_count": 77
 			},
 			{
 				"cell_type": "code",
