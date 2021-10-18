@@ -625,7 +625,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "72624c80-4532-4981-9166-50cba590caa3"
+						"spark.autotune.trackingId": "86af7e7d-b02c-4168-b479-cb749906bc5b"
 					}
 				},
 				"metadata": {
@@ -670,7 +670,7 @@
 							"display(df.limit(10))"
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": 34
 					},
 					{
 						"cell_type": "code",
@@ -690,7 +690,7 @@
 							"display(df)"
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 35
 					},
 					{
 						"cell_type": "code",
@@ -709,7 +709,7 @@
 							"df.count()"
 						],
 						"outputs": [],
-						"execution_count": 12
+						"execution_count": 36
 					},
 					{
 						"cell_type": "code",
@@ -728,7 +728,7 @@
 							"df.describe()"
 						],
 						"outputs": [],
-						"execution_count": 13
+						"execution_count": 37
 					},
 					{
 						"cell_type": "code",
@@ -747,7 +747,7 @@
 							"from pyspark.sql.functions import *"
 						],
 						"outputs": [],
-						"execution_count": 14
+						"execution_count": 38
 					},
 					{
 						"cell_type": "code",
@@ -763,10 +763,10 @@
 							}
 						},
 						"source": [
-							"df = df.withColumn('TimeCreated', to_date(col(\"sensortime\"),\"dd/MM/yyyy\"))"
+							"df = df.withColumn('TimeCreated', to_timestamp(col(\"sensortime\"),\"MM/dd/yyyy HH:mm:ss.SSSSSS\"))"
 						],
 						"outputs": [],
-						"execution_count": 30
+						"execution_count": 50
 					},
 					{
 						"cell_type": "code",
@@ -786,7 +786,27 @@
 							"display(df.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 51
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"display(df.printSchema())"
+						],
+						"outputs": [],
+						"execution_count": 54
 					},
 					{
 						"cell_type": "code",
@@ -802,10 +822,11 @@
 							}
 						},
 						"source": [
-							"df = df.withColumn(\"Timestamp\", (col(\"sensortime\").cast(\"timestamp\")))"
+							"df = df.withColumn(\"year\", year(col(\"TimeCreated\"))).withColumn(\"month\", month(col(\"TimeCreated\"))).withColumn(\"day\", dayofmonth(col(\"TimeCreated\")))\r\n",
+							"df = df.withColumn(\"hour\", hour(col(\"TimeCreated\"))).withColumn(\"minute\", minute(col(\"TimeCreated\"))).withColumn(\"second\", second(col(\"TimeCreated\")))"
 						],
 						"outputs": [],
-						"execution_count": 32
+						"execution_count": 56
 					},
 					{
 						"cell_type": "code",
@@ -825,7 +846,46 @@
 							"display(df.limit(5))"
 						],
 						"outputs": [],
-						"execution_count": 33
+						"execution_count": 57
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"display(df.groupby(['year','month','day','hour','minute']).agg({'temperature': 'avg', 'humidity': 'avg'}))"
+						],
+						"outputs": [],
+						"execution_count": 64
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
 					}
 				]
 			},
