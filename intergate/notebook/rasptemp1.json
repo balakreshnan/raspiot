@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ddc76626-0492-449d-9a88-1334992f8768"
+				"spark.autotune.trackingId": "8ce9bfe5-fb47-4321-876d-909328434185"
 			}
 		},
 		"metadata": {
@@ -61,7 +61,7 @@
 					"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/10/18/*.parquet', format='parquet')\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 10
+				"execution_count": 34
 			},
 			{
 				"cell_type": "code",
@@ -80,7 +80,7 @@
 				"source": [
 					"display(df)"
 				],
-				"execution_count": 11
+				"execution_count": 35
 			},
 			{
 				"cell_type": "code",
@@ -98,7 +98,7 @@
 				"source": [
 					"df.count()"
 				],
-				"execution_count": 12
+				"execution_count": 36
 			},
 			{
 				"cell_type": "code",
@@ -116,7 +116,7 @@
 				"source": [
 					"df.describe()"
 				],
-				"execution_count": 13
+				"execution_count": 37
 			},
 			{
 				"cell_type": "code",
@@ -134,7 +134,7 @@
 				"source": [
 					"from pyspark.sql.functions import *"
 				],
-				"execution_count": 14
+				"execution_count": 38
 			},
 			{
 				"cell_type": "code",
@@ -150,9 +150,9 @@
 					}
 				},
 				"source": [
-					"df = df.withColumn('TimeCreated', to_date(col(\"sensortime\"),\"dd/MM/yyyy\"))"
+					"df = df.withColumn('TimeCreated', to_timestamp(col(\"sensortime\"),\"MM/dd/yyyy HH:mm:ss.SSSSSS\"))"
 				],
-				"execution_count": 30
+				"execution_count": 50
 			},
 			{
 				"cell_type": "code",
@@ -171,25 +171,7 @@
 				"source": [
 					"display(df.limit(5))"
 				],
-				"execution_count": 31
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df = df.withColumn(\"Timestamp\", (col(\"sensortime\").cast(\"timestamp\")))"
-				],
-				"execution_count": 32
+				"execution_count": 51
 			},
 			{
 				"cell_type": "code",
@@ -206,9 +188,28 @@
 					"collapsed": false
 				},
 				"source": [
-					"display(df.limit(5))"
+					"display(df.printSchema())"
 				],
-				"execution_count": 33
+				"execution_count": 54
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}
