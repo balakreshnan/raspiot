@@ -128,8 +128,7 @@
 						"nodeCount": 10,
 						"cores": 32,
 						"memory": 224
-					},
-					"sessionKeepAliveTimeout": 30
+					}
 				},
 				"cells": [
 					{
@@ -205,7 +204,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"print(df.schema)"
 						],
@@ -214,7 +212,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df.columns"
 						],
@@ -223,7 +220,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df.printSchema()"
 						],
@@ -232,7 +228,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from pyspark.sql.functions import *"
 						],
@@ -241,7 +236,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df = df.withColumn(\"year\", year(df.timeCreated))\n",
 							"df = df.withColumn(\"month\", month(df.timeCreated))\n",
@@ -287,7 +281,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"df.printSchema"
 						],
@@ -296,7 +289,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"traindf = df[[\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]]"
 						],
@@ -338,7 +330,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"categoricalColumns = [item[0] for item in traindf.dtypes if item[1].startswith('string') ]"
 						],
@@ -347,7 +338,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"featurescol = [\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"]"
 						],
@@ -356,7 +346,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"stages = []\n",
 							"#iterate through all categorical values\n",
@@ -372,7 +361,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from pyspark.ml import Pipeline\n",
 							"from pyspark.ml.classification import RandomForestClassifier\n",
@@ -386,7 +374,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"labelIndexer = StringIndexer(inputCol=\"MachTemp\", outputCol=\"indexedLabel\").fit(traindf)\n",
 							"\n",
@@ -436,7 +423,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"assembler = VectorAssembler(\n",
 							"    inputCols=[\"MachTemp\", \"pressure\", \"AmbTemp\",\"humidity\",\"year\", \"month\", \"day\", \"hour\", \"minute\"],\n",
@@ -482,7 +468,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"output = output.withColumn(\"labels\", output.MachTemp)"
 						],
@@ -523,7 +508,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from pyspark.ml.regression import LinearRegression\n",
 							"\n",
@@ -537,7 +521,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"# Print the coefficients and intercept for linear regression\n",
 							"print(\"Coefficients: %s\" % str(lrModel.coefficients))\n",
@@ -556,7 +539,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"output = output.withColumn(\"label\", output.MachTemp)"
 						],
@@ -565,7 +547,6 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
 						"source": [
 							"from pyspark.ml import Pipeline\n",
 							"from pyspark.ml.regression import DecisionTreeRegressor\n",
@@ -613,7 +594,97 @@
 					},
 					{
 						"cell_type": "code",
-						"metadata": {},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/rasptemp1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "mlspark31",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "224g",
+					"driverCores": 32,
+					"executorMemory": "224g",
+					"executorCores": 32,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "20bd5f38-9685-4080-aaf0-5ad9560ea6c0"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/c46a9435-c957-4e6c-a0f4-b9a597984773/resourceGroups/raspiot/providers/Microsoft.Synapse/workspaces/raspiotanalytics/bigDataPools/mlspark31",
+						"name": "mlspark31",
+						"type": "Spark",
+						"endpoint": "https://raspiotanalytics.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/mlspark31",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 32,
+						"memory": 224,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://root@raspiothnsstore.dfs.core.windows.net/raspinput/2021/10/18/*.parquet', format='parquet')\r\n",
+							"display(df.limit(10))"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
 						"source": [
 							""
 						],
