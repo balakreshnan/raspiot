@@ -1,0 +1,25 @@
+## FROM arm32v7/python:3.7-slim-buster
+FROM balenalib/raspberry-pi-debian
+
+WORKDIR /app
+RUN echo 'asd'
+
+RUN apt-get update && apt-get -y install gcc
+RUN apt-get update -y && apt-get install -y python3-dev build-essential
+
+##RUN apt-get update && apt-get install -y python-rpi.gpio python3-rpi.gpio
+RUN apt-get update && apt-get install -y python3-rpi.gpio
+RUN apt-get install -y python3-pip
+
+RUN pip3 install --upgrade pip wheel setuptools
+
+COPY requirements.txt ./
+RUN apt-get install -y libgpiod2
+
+RUN pip3 install -r requirements.txt
+
+COPY . .
+
+USER root:root
+
+CMD [ "python3", "-u", "./main.py" ]

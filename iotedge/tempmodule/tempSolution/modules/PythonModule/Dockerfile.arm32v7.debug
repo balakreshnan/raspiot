@@ -1,0 +1,20 @@
+FROM arm32v7/python:3.7-slim-buster
+
+WORKDIR /app
+RUN echo 'asd'
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libboost-python1.62.0 python3-pip libpython3-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --upgrade pip
+RUN pip install --upgrade setuptools
+
+COPY requirements.txt ./
+RUN apt-get install -y libgpiod2
+RUN pip3 install -r requirements.txt
+
+COPY . .
+
+USER root:root
+
+CMD [ "python3", "-u", "./main.py" ]
